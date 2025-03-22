@@ -367,3 +367,41 @@ button:disabled {
   color: white;
   border-color: #3a46c2;
 }
+
+.content-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.copy-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+  background-color: var(--primary-hover);
+}
+
+.copy-success {
+  color: #4caf50;
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.dark-theme .copy-success {
+  color: #8affb5;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

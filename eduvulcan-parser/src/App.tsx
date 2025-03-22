@@ -11,9 +11,9 @@ function App() {
   const [tokens, setTokens] = useState<string[]>([])
   const [decodedTokens, setDecodedTokens] = useState<any[]>([])
   const [useProxy, setUseProxy] = useState(true)
-  const [showManualSteps, setShowManualSteps] = useState(false)
   const [rawHtml, setRawHtml] = useState<string | null>(null)
-  const [showMode, setShowMode] = useState<'parsed' | 'raw'>('parsed')
+  const [showMode, setShowMode] = useState<'parsed' | 'raw'>('raw')
+  const [copySuccess, setCopySuccess] = useState('')
 
   // Function to decode JWT token
   const decodeJWT = (token: string) => {
@@ -222,135 +222,61 @@ function App() {
     }
   }
 
-  const handlePasteContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const content = e.target.value
+  const copyToClipboard = async (text: string, type: string) => {
     try {
-      // Save raw HTML
-      setRawHtml(content)
-      
-      // Check if pasted content has the ap input
-      if (content.includes('id="ap"')) {
-        const parser = new DOMParser()
-        const htmlDoc = parser.parseFromString(content, 'text/html')
-        const apInput = htmlDoc.getElementById('ap') as HTMLInputElement
-        
-        if (apInput && apInput.value) {
-          try {
-            const apData = JSON.parse(apInput.value)
-            setApiData(JSON.stringify(apData, null, 2))
-            
-            if (apData.Tokens && Array.isArray(apData.Tokens)) {
-              processTokens(apData.Tokens)
-            }
-          } catch (e) {
-            console.error('Error parsing JSON:', e)
-            setApiData(apInput.value)
-          }
-        } else {
-          setApiData(content)
-        }
-      } else {
-        // Try parsing as direct JSON
-        try {
-          const jsonData = JSON.parse(content)
-          setApiData(JSON.stringify(jsonData, null, 2))
-          
-          if (jsonData.Tokens && Array.isArray(jsonData.Tokens)) {
-            processTokens(jsonData.Tokens)
-          }
-        } catch (e) {
-          setApiData(content)
-        }
-      }
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(`${type} copied!`);
+      setTimeout(() => setCopySuccess(''), 2000);
     } catch (err) {
-      console.error('Error processing pasted content:', err)
-      setError('Failed to process the pasted content.')
+      setCopySuccess('Failed to copy!');
+      setTimeout(() => setCopySuccess(''), 2000);
     }
-  }
+  };
 
   return (
     <div className="app-container dark-theme">
-      <h1>Eduvulcan API Parser</h1>
-      
-      <div className="options-container">
-        <button 
-          className={`option-button ${!showManualSteps ? 'active' : ''}`} 
-          onClick={() => setShowManualSteps(false)}
-        >
-          Automatic Login
-        </button>
-        <button 
-          className={`option-button ${showManualSteps ? 'active' : ''}`} 
-          onClick={() => setShowManualSteps(true)}
-        >
-          Manual Steps
-        </button>
-      </div>
-      
-      {!showManualSteps ? (
-        <form onSubmit={handleLogin} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Password:</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          
-          <div className="form-group checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={useProxy}
-                onChange={(e) => setUseProxy(e.target.checked)}
-              />
-              Use Server Proxy
-            </label>
-          </div>
-          
-          <button type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-          
-          {error && <div className="error-message">{error}</div>}
-        </form>
-      ) : (
-        <div className="manual-steps">
-          <h2>Manual Steps</h2>
-          <ol>
-            <li>Open a new browser tab and go to <a href="https://eduvulcan.pl" target="_blank" rel="noopener noreferrer">eduvulcan.pl</a></li>
-            <li>Login with your credentials</li>
-            <li>Navigate to <a href="https://eduvulcan.pl/api/ap" target="_blank" rel="noopener noreferrer">eduvulcan.pl/api/ap</a></li>
-            <li>Right-click on the page and select "View Page Source"</li>
-            <li>Copy the entire source code (Ctrl+A then Ctrl+C)</li>
-            <li>Paste it below:</li>
-          </ol>
-          
-          <div className="form-group">
-            <label htmlFor="manual-input">Paste HTML Source:</label>
-            <textarea
-              id="manual-input"
-              className="manual-input"
-              placeholder="Paste the HTML source here..."
-              onChange={handlePasteContent}
-            />
-          </div>
+      <h1>Eduvulcan API/AP Parser</h1>
+      <p>tool by <a href="https://github.com/0xhkamori">0xhkamori</a> for <a href="https://github.com/0xhkamori/vulcanic">vulcanic app</a></p>
+      <form onSubmit={handleLogin} className="login-form">
+        <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      )}
+        
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        
+        <div className="form-group checkbox-group">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={useProxy}
+              onChange={(e) => setUseProxy(e.target.checked)}
+            />
+            Use Server Proxy
+          </label>
+        </div>
+        
+        <button type="submit" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+        
+        {error && <div className="error-message">{error}</div>}
+      </form>
       
       {(apiData || rawHtml) && (
         <div className="display-options">
@@ -374,12 +300,28 @@ function App() {
           <h2>Tokens:</h2>
           {tokens.map((token, index) => (
             <div key={index} className="token">
-              <h3>Token {index + 1}</h3>
+              <div className="content-header">
+                <h3>Token {index + 1}</h3>
+                <button 
+                  className="copy-button"
+                  onClick={() => copyToClipboard(token, `Token ${index + 1}`)}
+                >
+                  Copy
+                </button>
+              </div>
               <pre>{token}</pre>
               
               {decodedTokens[index] && (
                 <div className="decoded-token">
-                  <h4>Decoded Payload:</h4>
+                  <div className="content-header">
+                    <h4>Decoded Payload:</h4>
+                    <button 
+                      className="copy-button"
+                      onClick={() => copyToClipboard(JSON.stringify(decodedTokens[index], null, 2), `Decoded Payload ${index + 1}`)}
+                    >
+                      Copy
+                    </button>
+                  </div>
                   <pre>{JSON.stringify(decodedTokens[index], null, 2)}</pre>
                 </div>
               )}
@@ -391,13 +333,31 @@ function App() {
       {showMode === 'parsed' && apiData && (
         <div className="api-data-container">
           <h2>API Data:</h2>
+          <div className="content-header">
+            <button 
+              className="copy-button"
+              onClick={() => copyToClipboard(apiData, 'API Data')}
+            >
+              Copy
+            </button>
+            {copySuccess && <span className="copy-success">{copySuccess}</span>}
+          </div>
           <pre className="api-data">{apiData}</pre>
         </div>
       )}
       
       {showMode === 'raw' && rawHtml && (
         <div className="raw-html-container">
-          <h2>Raw HTML Source:</h2>
+          <h2>API/AP:</h2>
+          <div className="content-header">
+            <button 
+              className="copy-button"
+              onClick={() => copyToClipboard(rawHtml, 'Raw HTML')}
+            >
+              Copy
+            </button>
+            {copySuccess && <span className="copy-success">{copySuccess}</span>}
+          </div>
           <pre className="raw-html">{rawHtml}</pre>
         </div>
       )}
