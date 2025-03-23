@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/ap",
+      "dest": "/api/ap.js"
+    },
+    {
+      "src": "/logowanie",
+      "dest": "/api/logowanie.js"
+    },
+    {
+      "src": "/Account/QueryUserInfo",
+      "dest": "/api/account-query-user-info.js" 
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+} 
