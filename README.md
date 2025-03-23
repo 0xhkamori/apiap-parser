@@ -1,62 +1,54 @@
-# Eduvulcan API Parser
+# React + TypeScript + Vite
 
-A tool for parsing API responses from Eduvulcan.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Local Development
+Currently, two official plugins are available:
 
-1. Install dependencies:
-```bash
-npm install
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
 
-2. Start the development server:
-```bash
-npm run dev
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default tseslint.config({
+  plugins: {
+    // Add the react-x and react-dom plugins
+    'react-x': reactX,
+    'react-dom': reactDom,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended typescript rules
+    ...reactX.configs['recommended-typescript'].rules,
+    ...reactDom.configs.recommended.rules,
+  },
+})
 ```
-
-## Deployment to Vercel
-
-This application is configured to work with Vercel deployment. The API proxy functionality is implemented using Vercel Serverless Functions in the `/api` directory.
-
-### How it works
-
-When deployed to Vercel:
-
-1. The API routes defined in the `/api` directory handle requests to:
-   - `/api/ap`
-   - `/logowanie`
-   - `/Account/QueryUserInfo`
-
-2. These routes proxy the requests to the actual Eduvulcan API, preserving cookies and headers.
-
-3. The `vercel.json` file configures the routing for these API endpoints.
-
-### Common Issues
-
-#### Receiving HTML instead of API data
-
-If you're receiving the HTML of your own application instead of the API data when making requests, it's likely because:
-
-1. The local development proxy doesn't work in production
-2. The Vercel API routes are not correctly set up
-
-Make sure:
-- All API routes in the `/api` directory are properly implemented
-- The `vercel.json` file is correctly configured
-- The correct endpoints are being used in the application code
-
-## Features
-
-- Login to Eduvulcan using proxy or direct methods
-- View parsed API data
-- View raw HTML response
-- Copy tokens, parsed data, and raw HTML to clipboard
-- Decode JWT tokens
-
-## Technology
-
-- React
-- TypeScript
-- Vite
-- Axios
-- Vercel Serverless Functions
