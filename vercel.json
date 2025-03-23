@@ -3,15 +3,18 @@
   "routes": [
     {
       "src": "/api/ap",
-      "dest": "/api/ap.js"
+      "dest": "/api/ap.js",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/logowanie",
-      "dest": "/api/logowanie.js"
+      "dest": "/api/logowanie.js",
+      "methods": ["GET", "POST", "OPTIONS"]
     },
     {
       "src": "/Account/QueryUserInfo",
-      "dest": "/api/account-query-user-info.js" 
+      "dest": "/api/account-query-user-info.js",
+      "methods": ["POST", "OPTIONS"]
     },
     {
       "src": "/(.*)",
@@ -23,5 +26,16 @@
       "memory": 1024,
       "maxDuration": 10
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+      ]
+    }
+  ]
 } 
